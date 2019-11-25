@@ -1,4 +1,3 @@
-import logging
 import time
 from threading import Timer
 
@@ -27,6 +26,11 @@ class cf_control():
 		self._cf.open_link(link_uri)
 
 		self.is_connected = True
+		
+		self.roll = 0
+		self.pitch = 0
+		self.yaw = 0
+		self.thrust = 0
 
 	def _connected(self, uri):
 		print(f"Connected to {uri}")
@@ -42,8 +46,15 @@ class cf_control():
 		print(f"Disconnect from {uri}.")
 		self.is_connected = False
 
-	def send_control_command(self, roll, pitch, yaw, thrust):
-		self._cf.commander.send_setpoint(roll, pitch, yaw, thrust) # thrust should be between 10001 -> 60000
+	def set_control_command_param(self, roll, pitch, yaw, thrust):
+		self.roll = roll
+		self.pitch = pitch
+		self.yaw = yaw
+		self.thrust = thrust # thrust should be between 10001 -> 60000
+
+	def send_control_command(self):
+		self._cf.commander.send_setpoint(self.roll, self.pitch, self.yaw, self.thrust)
+		Timer(0.01,self.send_control_command).start()
 
 	def close_link(self):
 		self._cf.close_link()
@@ -69,9 +80,11 @@ def main():
 				roll = float(input("Roll: "))
 				pitch = float(input("Pitch: "))
 				yaw = float(input("Yaw: "))
-				thrust = float(input("Thrust: "))
+				thrust = float(input("Thrust (10001 -> 60000): "))
 
-				cf.send_control_command(roll, pitch, yaw, thrust)
+				cf.set_control_command_param(roll, pitch, yaw, thrust)
+				cf.send_control_command()
+				
 			except KeyboardInterrupt:
 				cf.close_link()
 
