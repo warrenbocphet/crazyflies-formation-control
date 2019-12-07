@@ -29,8 +29,8 @@ class cf_logging:
 		self._cf.connection_failed.add_callback(self._connection_failed)
 		self._cf.connection_lost.add_callback(self._connection_lost)
 
-		print('Connecting to %s' % link_uri)
-		self._cf.open_link(link_uri)
+		print('Connecting to %s' % uri)
+		self._cf.open_link(uri)
 
 		self.is_connected = True
 
@@ -59,7 +59,7 @@ class cf_logging:
 			print('Could not add Stabilizer log config, bad configuration.')
 
 		# Start a timer to disconnect in 5 seconds
-		Timer(5, self._cf.close_link).start()
+		# Timer(5, self._cf.close_link).start()
 
 	# Connection callback
 	def _connection_failed(self, uri, msg):

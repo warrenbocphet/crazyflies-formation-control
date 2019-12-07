@@ -1,15 +1,16 @@
+import sys
+import os
+import pyqtgraph as pg
+from PyQt5 import QtGui
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtGui import QIcon
+
 import time
 from threading import Timer
-
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
-
-"""
-- Anh Tran -
-This script try to control the propeller of the crazyflie.
-
-"""
 
 class cf_control():
 	"""docstring for cf_control"""
@@ -88,41 +89,35 @@ class cf_control():
 		time.sleep(0.1)
 		self._cf.close_link()
 
+class Window(QWidget):
+	def __init__(self):
+		super(Window, self).__init__()
+		self.setGeometry(50, 50, 500, 300)
+		self.setWindowTitle("Crazyflie Multi Agent")
+		scriptDir = os.path.dirname(os.path.realpath(__file__))
+		self.setWindowIcon(QIcon(scriptDir + '/media/uoa_logo.png'))
+		self.home()		
+
+	def home(self):
+		btn_quit = QtGui.QPushButton("Quit", self)
+
+		btn_quit.clicked.connect(self.btn_quit_clicked)
+
+		btn_quit.resize(btn_quit.sizeHint())
+		btn_quit.move(100,100)
+
+		self.show()
+
+	def btn_quit_clicked(self):
+		print("Program closed.")
+		sys.exit()
+
 def main():
-	# Initialize the low-level drivers
-	cflib.crtp.init_drivers(enable_debug_driver=False)
+	app = QApplication(sys.argv)
 
-	# Scan for Crazyflies and use the first one found
-	print('Scanning interfaces for Crazyflies...')
-	available = cflib.crtp.scan_interfaces()
+	GUI = Window()
 
-	print('Crazyflies found:')
-	for i in available:
-		print(i[0])
-
-	if len(available) > 0:
-		cf = cf_control(available[0][0])
-
-		while (not (cf.is_connected)):
-			continue
-
-		while (cf.is_connected):
-			try:
-				print("\nType in the command")
-				roll = int(input("Roll: "))
-				pitch = int(input("Pitch: "))
-				yaw = int(input("Yaw: "))
-				thrust = int(input("Thrust (10001 -> 60000): "))
-
-				cf.new_command = 1
-				cf.set_control_command_param(roll, pitch, yaw, thrust)
-				cf.send_control_command()
-				
-			except KeyboardInterrupt:
-				cf.close_link()
-
-	else:
-		print('No Crazyflies found, cannot run example')
+	sys.exit(app.exec_())
 
 if __name__ == '__main__':
 	main()
