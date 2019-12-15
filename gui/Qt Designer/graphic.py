@@ -96,13 +96,13 @@ class Ui_MainWindow(object):
         self.menuInterface = QtWidgets.QMenu(self.menuBar)
         self.menuInterface.setObjectName("menuInterface")
         MainWindow.setMenuBar(self.menuBar)
-        self.actionsimplecomm = QtWidgets.QAction(MainWindow)
-        self.actionsimplecomm.setObjectName("actionsimplecomm")
+        self.action3D_plotter = QtWidgets.QAction(MainWindow)
+        self.action3D_plotter.setObjectName("action3D_plotter")
         self.action3D_visualiser = QtWidgets.QAction(MainWindow)
         self.action3D_visualiser.setObjectName("action3D_visualiser")
         self.menuInterface.addSeparator()
         self.menuInterface.addSeparator()
-        self.menuInterface.addAction(self.actionsimplecomm)
+        self.menuInterface.addAction(self.action3D_plotter)
         self.menuInterface.addAction(self.action3D_visualiser)
         self.menuBar.addAction(self.menuInterface.menuAction())
 
@@ -121,7 +121,7 @@ class Ui_MainWindow(object):
         self.label_roll.setText(_translate("MainWindow", "Roll"))
         self.btn_scan.setText(_translate("MainWindow", "Scan"))
         self.menuInterface.setTitle(_translate("MainWindow", "Interface"))
-        self.actionsimplecomm.setText(_translate("MainWindow", "Simple Communication"))
+        self.action3D_plotter.setText(_translate("MainWindow", "Simple Communication"))
         self.action3D_visualiser.setText(_translate("MainWindow", "3D visualiser"))
 
 

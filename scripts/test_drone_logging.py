@@ -77,7 +77,12 @@ class cf_logging:
 		print(f"Error when logging {logconf.name}: {msg}")
 
 	def dataReceived_callback(self, timestamp, data, logconf):
-		print(f"[{timestamp}][{logconf.name}]: {data}")
+		x = data["stateEstimate.x"]
+		y = data["stateEstimate.y"]
+		z = data["stateEstimate.z"]
+		print(f"\n\nX: {x}")
+		print(f"\nY: {y}")
+		print(f"\nZ: {z}")
 
 
 def main():

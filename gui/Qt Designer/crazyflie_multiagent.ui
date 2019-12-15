@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
-    <height>393</height>
+    <width>528</width>
+    <height>338</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -282,7 +282,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>488</width>
+     <width>528</width>
      <height>22</height>
     </rect>
    </property>
@@ -292,7 +292,6 @@
     </property>
     <addaction name="separator"/>
     <addaction name="separator"/>
-    <addaction name="action3D_plotter"/>
     <addaction name="action3D_visualiser"/>
    </widget>
    <addaction name="menuInterface"/>

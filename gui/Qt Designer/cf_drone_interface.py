@@ -1,13 +1,6 @@
-import sys
-import os
-import pyqtgraph as pg
-from PyQt5 import QtGui
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtGui import QIcon
-
 import time
 from threading import Timer
+
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.log import LogConfig
@@ -33,10 +26,34 @@ class cf_control():
 		self.yaw = 0
 		self.thrust = 0
 
+		self.x = 0
+		self.y = 0
+		self.z = 0
+
 	def _connected(self, uri):
 		print(f"Connected to {uri}")
-		# self._cf.commander.send_setpoint(0, 0, 0, 0) # Unlock startup thrust protection
 		self.is_connected = True
+
+		self._lg_stateEstimate = LogConfig(name="StateEstimation", period_in_ms=10)
+		self._lg_stateEstimate.add_variable('stateEstimate.x', 'float')
+		self._lg_stateEstimate.add_variable('stateEstimate.y', 'float')
+		self._lg_stateEstimate.add_variable('stateEstimate.z', 'float')
+		self._lg_stateEstimate.add_variable('stateEstimate.vx', 'float')
+		self._lg_stateEstimate.add_variable('stateEstimate.vy', 'float')
+		self._lg_stateEstimate.add_variable('stateEstimate.vz', 'float')
+
+		try:
+			self._cf.log.add_config(self._lg_stateEstimate)
+			self._lg_stateEstimate.data_received_cb.add_callback(self.dataReceived_callback)
+			self._lg_stateEstimate.error_cb.add_callback(self.error_callback)
+
+			self._lg_stateEstimate.start()
+
+		except KeyError as e:
+			print(f"Could not start log config, {e} not found in TOC")
+
+		except AttributeError:
+			print('Could not add Stabilizer log config, bad configuration.')
 
 	# Connection callback
 	def _connection_failed(self, uri, msg):
@@ -89,35 +106,11 @@ class cf_control():
 		time.sleep(0.1)
 		self._cf.close_link()
 
-class Window(QWidget):
-	def __init__(self):
-		super(Window, self).__init__()
-		self.setGeometry(50, 50, 500, 300)
-		self.setWindowTitle("Crazyflie Multi Agent")
-		scriptDir = os.path.dirname(os.path.realpath(__file__))
-		self.setWindowIcon(QIcon(scriptDir + '/media/uoa_logo.png'))
-		self.home()		
+	# Logging data connect
+	def error_callback(self, logconf, msg):
+		print(f"Error when logging {logconf.name}: {msg}")
 
-	def home(self):
-		btn_quit = QtGui.QPushButton("Quit", self)
-
-		btn_quit.clicked.connect(self.btn_quit_clicked)
-
-		btn_quit.resize(btn_quit.sizeHint())
-		btn_quit.move(100,100)
-
-		self.show()
-
-	def btn_quit_clicked(self):
-		print("Program closed.")
-		sys.exit()
-
-def main():
-	app = QApplication(sys.argv)
-
-	GUI = Window()
-
-	sys.exit(app.exec_())
-
-if __name__ == '__main__':
-	main()
+	def dataReceived_callback(self, timestamp, data, logconf):
+		self.x = data["stateEstimate.x"]
+		self.y = data["stateEstimate.y"]
+		self.z = data["stateEstimate.z"]
