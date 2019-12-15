@@ -21,10 +21,14 @@ class cf_control():
 		print('Connecting to %s' % uri)
 		self._cf.open_link(uri)
 		
-		self.roll = 0
-		self.pitch = 0
-		self.yaw = 0
-		self.thrust = 0
+		self.roll_cmd = 0
+		self.pitch_cmd = 0
+		self.yaw_cmd = 0
+		self.thrust_cmd = 0
+
+		self.x_cmd = 0
+		self.y_cmd = 0
+		self.z_cmd = 0
 
 		self.x = 0
 		self.y = 0
@@ -67,17 +71,28 @@ class cf_control():
 		self.is_connected = False
 
 	def set_control_command_param(self, roll, pitch, yaw, thrust):
-		self.roll = roll
-		self.pitch = pitch
-		self.yaw = yaw
-		self.thrust = thrust # thrust should be between 10001 -> 60000
+		self.roll_cmd = roll
+		self.pitch_cmd = pitch
+		self.yaw_cmd = yaw
+		self.thrust_cmd = thrust # thrust should be between 10001 -> 60000
 
 	def send_control_command(self):
 		if (self.new_command == 1):
 			self._cf.commander.send_setpoint(0, 0, 0, 0)
 			self.new_command = 0
 			
-		self._cf.commander.send_setpoint(self.roll, self.pitch, self.yaw, self.thrust)
+		self._cf.commander.send_setpoint(self.roll_cmd, self.pitch_cmd, self.yaw_cmd, self.thrust_cmd)
+		Timer(0.1,self.send_control_command).start()
+
+	def set_position_command_param(self, x, y, z, yaw):
+		self.x_cmd = x
+		self.y_cmd = y
+		self.z_cmd = z
+		self.yaw_cmd = yaw
+
+	def send_position_command(self):
+
+		self._cf.commander.send_position_setpoint(self.x_cmd, self.y_cmd, self.z_cmd, self.yaw_cmd)
 		Timer(0.1,self.send_control_command).start()
 
 	def close_link(self):

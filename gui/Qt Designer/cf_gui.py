@@ -104,6 +104,7 @@ class CommWindow(QMainWindow):
 		self.btn_scan.clicked.connect(self.btn_scan_clicked)
 		self.btn_connectall.clicked.connect(self.btn_connect_all_clicked)
 		self.btn_snd_cmd.clicked.connect(self.btn_snd_cmd_clicked)
+		self.btn_snd_pos_cmd.clicked.connect(self.btn_snd_pos_cmd_clicked)
 		self.action3D_visualiser.triggered.connect(self.open_visualiser)
 
 	def btn_exit_clicked(self):
@@ -143,6 +144,15 @@ class CommWindow(QMainWindow):
 	def comboDrones_index_changed(self):
 		self.selected_cf = cfs[self.combobox_drone.currentIndex()]
 		self.PlotWindow.add_agent(self.selected_cf)
+
+	def btn_snd_pos_cmd_clicked(self):
+		x = float(self.edit_x.text())
+		y = float(self.edit_y.text())
+		z = float(self.edit_z.text())
+		yaw = float(self.edit_yaw.text())
+
+		self.selected_cf.set_position_command_param(x, y, z, yaw)
+		self.selected_cf.send_position_command()
 
 	def btn_snd_cmd_clicked(self):
 		roll = int(self.edit_roll.text())
